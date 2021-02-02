@@ -5,24 +5,26 @@ pipeline {
 
 
     stages {
-        stage('Build') {
+        stage('Backend') {
             agent{         
                 docker { image 'mcr.microsoft.com/dotnet/sdk:3.1' }     
-        }
-            steps {
-                sh 'dotnet build'
-                echo 'Building..'
+            }
+            stages {
+                stage('Build') {
+                    steps {
+                        sh 'dotnet build'
+                        echo 'Building..'
+                    }
+                }
+                stage('Test') {
+                    steps {
+                        sh 'dotnet test'
+                        echo 'Testing..'
+                    }
+                }
             }
         }
-        stage('Test') {
-            agent{         
-                docker { image 'mcr.microsoft.com/dotnet/sdk:3.1' }     
-        }
-            steps {
-                sh 'dotnet test'
-                echo 'Testing..'
-            }
-        }
+        
         stage('Deploy') {
              agent{         
                 docker { image 'node:14-alpine' }         
