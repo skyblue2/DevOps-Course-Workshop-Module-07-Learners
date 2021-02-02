@@ -29,10 +29,7 @@ pipeline {
                 docker { image 'node:14-alpine' }         
         }
             steps {
-                dir("DotnetTemplate.Web"){
-                    sh "pwd"
-                }
-                echo 'pwd'
+                sh 'cd DotnetTemplate.Web'
                 sh 'npm install'
                 sh 'npm run build'
                 sh 'npm run lint'
