@@ -1,8 +1,7 @@
 pipeline {
     agent any
     environment {         
-        DOTNET_CLI_HOME = "/tmp/DOTNET_CLI_HOME"     
-        }
+        DOTNET_CLI_HOME = "/tmp/DOTNET_CLI_HOME"     }
 
 
     stages {
@@ -29,12 +28,14 @@ pipeline {
                 docker { image 'node:14-alpine' }         
         }
             steps {
-                sh 'cd DotnetTemplate.Web'
-                sh 'npm install'
-                sh 'npm run build'
-                sh 'npm run lint'
-                sh 'npm t'
-                echo 'Deploying....'
+                dir("DotnetTemplate.Web"){
+                    echo 'pwd'
+                    sh 'npm install'
+                    sh 'npm run build'
+                    sh 'npm run lint'
+                    sh 'npm t'
+                    echo 'Deploying....'
+                }
             }
         }
     }
