@@ -1,31 +1,42 @@
 pipeline {
-    agent{         
-        docker { image 'node:14-alpine' }         
+    agent any
+    environment {         
+        DOTNET_CLI_HOME = "/tmp/DOTNET_CLI_HOME"     
         }
 
-    agent{         
-        docker { image 'mcr.microsoft.com/dotnet/sdk:3.1' }     
-        }
 
     stages {
         stage('Build') {
+            agent{         
+                docker { image 'mcr.microsoft.com/dotnet/sdk:3.1' }     
+        }
             steps {
-                dotnet build
+                sh 'dotnet build'
                 echo 'Building..'
             }
         }
         stage('Test') {
+            agent{         
+                docker { image 'mcr.microsoft.com/dotnet/sdk:3.1' }     
+        }
             steps {
-                dotnet test
+                sh 'dotnet test'
                 echo 'Testing..'
             }
         }
         stage('Deploy') {
+             agent{         
+                docker { image 'node:14-alpine' }         
+        }
             steps {
-                npm install
-                npm run build
-                npm run lint
-                npm t
+                dir("DotnetTemplate.Web"){
+                    sh "pwd"
+                }
+                echo 'pwd'
+                sh 'npm install'
+                sh 'npm run build'
+                sh 'npm run lint'
+                sh 'npm t'
                 echo 'Deploying....'
             }
         }
