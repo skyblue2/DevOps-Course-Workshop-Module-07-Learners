@@ -1,13 +1,12 @@
-FROM jenkins/jenkins:2.263.3-lts-jdk11
-USER root
-RUN apt-get update && apt-get install -y apt-transport-https \
-       ca-certificates curl gnupg2 \
-       software-properties-common
-RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-RUN apt-key fingerprint 0EBFCD88
-RUN add-apt-repository \
-       "deb [arch=amd64] https://download.docker.com/linux/debian \
-       $(lsb_release -cs) stable"
-RUN apt-get update && apt-get install -y docker-ce-cli
-USER jenkins
-RUN jenkins-plugin-cli --plugins blueocean:1.24.4
+FROM mcr.microsoft.com/dotnet/sdk:3.1
+RUN apt-get update -yq \
+    && apt-get install curl gnupg -yq \
+    && curl -sL https://deb.nodesource.com/setup_10.x | bash \
+    && apt-get install nodejs -yq
+COPY . /app
+WORKDIR /app
+RUN dotnet build
+WORKDIR /app/DotnetTemplate.Web
+RUN npm install && npm run build
+EXPOSE 5000/tcp
+CMD ["dotnet", "run"]

@@ -1,0 +1,52 @@
+name: Mod7CI
+on: [push]                      # Will make the workflow run every time you push to any branch
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest      # Sets the build environment a machine with the latest Ubuntu installed
+    steps:
+    - uses: actions/checkout@v2 # Adds a step to checkout the repository code
+    - name: Hello world
+      run: echo 'Hello world'
+    - name: Build C Sharp Code
+      run: dotnet build 
+    - name: Run C Sharp Tests
+      run: dotnet test 
+    - name: Build TS Code
+      run: |
+       cd DotnetTemplate.Web
+       npm install
+       npm run build
+    - name: Run TS Linter
+      run: |
+        cd DotnetTemplate.Web
+        npm run lint
+    - name: Run TS Tests
+      run: |
+        cd DotnetTemplate.Web
+        npm t
+    # - name: Slack Notification Success
+    #   if: ${{ success() }}
+    #   uses: rtCamp/action-slack-notify@v2
+    #   env:
+    #     SLACK_WEBHOOK: ${{ secrets.SLACK_NOTIFY }}
+    # - name: Slack Notification Failure
+    #   if: ${{ failure() }}
+    #   uses: rtCamp/action-slack-notify@v2
+    #   env:
+    #     SLACK_WEBHOOK: ${{ secrets.SLACK_NOTIFY }}
+    #     SLACK_MESSAGE: "Build or tests failed!"
+    #     SLACK_COLOR: #000000
+    # - name: Slack Notification Cancelled
+    #   if: ${{ cancelled() }}
+    #   uses: rtCamp/action-slack-notify@v2
+    #   env:
+    #     SLACK_WEBHOOK: ${{ secrets.SLACK_NOTIFY }}
+    #     SLACK_MESSAGE: "Build was cancelled"
+    - name: publish to docker hub
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        repository: https://hub.docker.com/repository/docker/zsaexp/dotnettemplate
+        tag_with_ref: true 
